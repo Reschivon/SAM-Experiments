@@ -72,7 +72,7 @@ class Environment:
             use_shortest_path_partial_rewards=False, exploration_reward = 1, collision_penalty=1, nonmovement_penalty=1,
             use_shortest_path_movement=False, fixed_step_size=None, use_steering_commands=False, steering_commands_num_turns=4,
             ministep_size=0.25, inactivity_cutoff=100, random_seed=None,
-            use_gui=False, show_debug_annotations=False, show_occupancy_map=True, use_opt_rule=0,
+            use_gui=False, show_debug_annotations=False, show_occupancy_map=False, use_opt_rule=0,
         ):
         ################################################################################
         # Store arguments
@@ -172,6 +172,7 @@ class Environment:
         self.step_exploration = None
         self.configuration_space = None
         self.configuration_space_thin = None
+        self.OOBspace = None
         self.closest_cspace_indices = None
         self.occupancy_map = None
 
@@ -952,6 +953,7 @@ class Environment:
         self.configuration_space = 1 - np.maximum(self.wall_map, binary_dilation(self.occupancy_map, selem).astype(np.uint8))
         selem_thin = disk(np.floor(ROBOT_HALF_WIDTH * LOCAL_MAP_PIXELS_PER_METER))
         self.configuration_space_thin = 1 - binary_dilation(np.minimum(1 - self.wall_map, self.occupancy_map), selem_thin).astype(np.uint8)
+        self.OOBspace = np.maximum(self.wall_map, self.occupancy_map).astype(np.uint8)
         self.closest_cspace_indices = distance_transform_edt(1 - self.configuration_space, return_distances=False, return_indices=True)
 
         return cube_found
@@ -1006,7 +1008,8 @@ class Environment:
         channels.append(self._get_local_overhead_map())
 
         # Robot state
-        channels.append(self.robot_state_channel)
+        untraversible_space = self._get_local_map(self.OOBspace, self.robot_position, self.robot_heading)
+        channels.append(np.clip(self.robot_state_channel + untraversible_space, 0, 1))
         
         # Visit frequency map
         if self.use_visit_frequency_channel:

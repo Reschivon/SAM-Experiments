@@ -7,7 +7,7 @@ import numpy as np
 import utils
 import time
 
-def _run_eval(cfg, num_episodes=200):
+def _run_eval(cfg, num_episodes=8):
     env = utils.get_env_from_cfg(cfg, random_seed=9)
     policy = utils.get_policy_from_cfg(cfg, env.get_action_space(), random_seed=9)
     data = [[] for _ in range(num_episodes)]

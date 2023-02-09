@@ -2,7 +2,8 @@ import random
 import torch
 from torchvision import transforms
 import models
-
+import vin
+from ConvNeXt.semantic_segmentation.backbone.convnext import ConvNeXt
 
 class DQNPolicy:
     def __init__(self, cfg, action_space, train=False, random_seed=None):
@@ -10,7 +11,7 @@ class DQNPolicy:
         self.action_space = action_space
         self.train = train
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = 'cpu' #torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.policy_net = self.build_network()
         self.transform = transforms.ToTensor()
 
@@ -58,4 +59,30 @@ class DenseActionSpacePolicy(DQNPolicy):
     def build_network(self):
         return torch.nn.DataParallel(
             models.DenseActionSpaceDQN(num_input_channels=self.cfg.num_input_channels)
+        ).to(self.device)
+
+class VINPolicy(DQNPolicy):
+    def build_network(self):
+        return torch.nn.DataParallel(
+            vin.VIN(l_i=self.cfg.num_input_channels, l_h=150, l_q=12)
+        ).to(self.device)
+
+class SuperVINPolicy(DQNPolicy):
+    def build_network(self):
+        return torch.nn.DataParallel(
+            vin.SuperVIN(l_i=self.cfg.num_input_channels, l_h=150, l_q=12)
+        ).to(self.device)
+
+class UNETPolicy(DQNPolicy):
+    def build_network(self):
+        return torch.nn.DataParallel(
+            torch.hub.load('mateuszbuda/brain-segmentation-pytorch', 'unet',
+            in_channels=4, out_channels=1, init_features=32, pretrained=False, trust_repo=True)
+        ).to(self.device)
+
+from torch.nn.parallel import DistributedDataParallel as DDP
+class ConvNextPolicy(DQNPolicy):
+    def build_network(self):
+        return DDP(
+            ConvNeXt(in_chans=4, out_indices=[3]), device_ids=1
         ).to(self.device)

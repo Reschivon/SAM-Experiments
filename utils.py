@@ -97,6 +97,16 @@ def get_policy_from_cfg(cfg, action_space, **kwargs):
         return policies.SteeringCommandsPolicy(cfg, action_space, **kwargs)
     if cfg.policy_type == 'dense_action_space':
         return policies.DenseActionSpacePolicy(cfg, action_space, **kwargs)
+    if cfg.policy_type == 'vin':
+        return policies.VINPolicy(cfg, action_space, **kwargs)
+    if cfg.policy_type == 'super_vin':
+        return policies.SuperVINPolicy(cfg, action_space, **kwargs)
+    if cfg.policy_type == 'unet':
+        return policies.UNETPolicy(cfg, action_space, **kwargs)
+    if cfg.policy_type == 'convnext':
+        return policies.ConvNextPolicy(cfg, action_space, **kwargs)
+
+        
     raise Exception
 
 ################################################################################

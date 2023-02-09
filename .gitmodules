@@ -1,0 +1,6 @@
+[submodule "ResNeSt"]
+	path = ResNeSt
+	url = https://github.com/zhanghang1989/ResNeSt
+[submodule "ConvNeXt"]
+	path = ConvNeXt
+	url = https://github.com/facebookresearch/ConvNeXt/

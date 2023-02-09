@@ -26,3 +26,4 @@ class DenseActionSpaceDQN(Module):
         x = F.relu(self.conv2(x))
         x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True)
         return self.conv3(x)
+

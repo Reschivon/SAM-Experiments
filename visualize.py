@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 _seed = 9
-_eps = 200
+_eps = 8
 
 #####################################################################
 # Defination of class
 
 class result():
     def __init__(self, _fn):
-        self.path = "./eval/seed_" + str(_seed) + "_eps_" + str(_eps) + "/" + _fn + ".npy"
+        self.path = "eval/20230129T224150681032-large_columns.npy"
         self.file = np.load(self.path, allow_pickle=True).squeeze()
         self.name = _fn
         self.eps = _eps

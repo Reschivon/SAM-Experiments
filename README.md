@@ -40,6 +40,8 @@ python enjoy.py --config-path logs/st-com-36000/config.yml
 
 The [`config`](config) directory contains template config files for all experiments in the paper. To start a training run, you can give one of the template config files to the `train.py` script. For example, the following will train a spatial action map with visit frequency map and sigmoid penalty policy:
 
+CUDA_LAUNCH_BLOCKING=1
+
 ```
 python train.py config/opt-vfm-sam.yml
 ```
