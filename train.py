@@ -43,7 +43,7 @@ class ReplayBuffer:
         return len(self.buffer)
 
 def train(cfg, policy_net, target_net, optimizer, batch, transform_func):
-    device = 'cpu' # torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     state_batch = torch.cat([transform_func(s) for s in batch.state]).to(device)  # (32, 3, 96, 96)
     action_batch = torch.tensor(batch.action, dtype=torch.long).to(device)  # (32,)

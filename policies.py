@@ -11,7 +11,7 @@ class DQNPolicy:
         self.action_space = action_space
         self.train = train
 
-        self.device = 'cpu' #torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.policy_net = self.build_network()
         self.transform = transforms.ToTensor()
 
@@ -84,5 +84,5 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 class ConvNextPolicy(DQNPolicy):
     def build_network(self):
         return DDP(
-            ConvNeXt(in_chans=4, out_indices=[3]), device_ids=1
+            ConvNeXt(in_chans=4, out_indices=[3])
         ).to(self.device)
