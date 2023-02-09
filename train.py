@@ -99,7 +99,8 @@ def main(cfg):
     policy = utils.get_policy_from_cfg(cfg, env.get_action_space(), train=True)
 
     # Optimizer
-    optimizer = optim.SGD(policy.policy_net.parameters(), lr=cfg.learning_rate, momentum=0.9, weight_decay=cfg.weight_decay)
+    optimizer = optim.AdamW(policy.policy_net.parameters(), lr=cfg.learning_rate, betas=(0.9, 0.999), eps=1e-8, weight_decay=cfg.weight_decay)
+    # optim.SGD(policy.policy_net.parameters(), lr=cfg.learning_rate, momentum=0.9, weight_decay=cfg.weight_decay)
 
     # Replay buffer
     replay_buffer = ReplayBuffer(cfg.replay_buffer_size)

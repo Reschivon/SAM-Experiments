@@ -136,7 +136,9 @@ def get_reward_img(reward, ministeps, img_height, state_width):
 
 def get_output_visualization(overhead_image, output):
     alpha = 0.5
-    return (1 - alpha) * overhead_image + alpha * JET[output, :]
+    print("output vis", overhead_image.reshape((128,128,3)).shape)
+    print(JET[output, :].shape)
+    return (1 - alpha) * overhead_image.reshape((128,128,3)) + alpha * JET[output, :]
 
 def get_state_and_output_visualization(state, output):
     output = to_uint8_image(scale_min_max(output))

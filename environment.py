@@ -1005,7 +1005,7 @@ class Environment:
 
         # Overhead map
         channels = []
-        channels.append(self._get_local_overhead_map())
+        # channels.append(self._get_local_overhead_map())
 
         # Robot state
         untraversible_space = self._get_local_map(self.OOBspace, self.robot_position, self.robot_heading)

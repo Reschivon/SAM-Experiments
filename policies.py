@@ -4,6 +4,9 @@ from torchvision import transforms
 import models
 import vin
 from ConvNeXt.semantic_segmentation.backbone.convnext import ConvNeXt
+# import importlib
+# foobar = importlib.import_module("semantic-segmentation")
+# from foobar.semseg.models.backbones.convnext.py import ConvNeXt
 
 class DQNPolicy:
     def __init__(self, cfg, action_space, train=False, random_seed=None):
@@ -83,6 +86,5 @@ class UNETPolicy(DQNPolicy):
 from torch.nn.parallel import DistributedDataParallel as DDP
 class ConvNextPolicy(DQNPolicy):
     def build_network(self):
-        return DDP(
-            ConvNeXt(in_chans=4, out_indices=[3])
-        ).to(self.device)
+        return ConvNeXt() \
+        .to(self.device)

@@ -4,3 +4,9 @@
 [submodule "ConvNeXt"]
 	path = ConvNeXt
 	url = https://github.com/facebookresearch/ConvNeXt/
+[submodule "semantic-segmentation"]
+	path = semantic-segmentation
+	url = https://github.com/sithu31296/semantic-segmentation
+[submodule "mmsegmentation"]
+	path = mmsegmentation
+	url = https://github.com/open-mmlab/mmsegmentation

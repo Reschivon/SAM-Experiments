@@ -1,4 +1,4 @@
 checkpoint_*
 logs
-__pycache__
+__pycache__/
 checkpoints
