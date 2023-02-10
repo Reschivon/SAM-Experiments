@@ -81,6 +81,7 @@ def train(cfg, policy_net, target_net, optimizer, batch, transform_func):
 
     return train_info
 
+from torchsummary import summary
 def main(cfg):
     # Set up logging and checkpointing
     log_dir = Path(cfg.log_dir)
@@ -99,6 +100,7 @@ def main(cfg):
     policy = utils.get_policy_from_cfg(cfg, env.get_action_space(), train=True)
 
     # Optimizer
+    # print("policy params", summary(policy.policy_net, (3, 128, 128)))
     optimizer = optim.AdamW(policy.policy_net.parameters(), lr=cfg.learning_rate, betas=(0.9, 0.999), eps=1e-8, weight_decay=cfg.weight_decay)
     # optim.SGD(policy.policy_net.parameters(), lr=cfg.learning_rate, momentum=0.9, weight_decay=cfg.weight_decay)
 

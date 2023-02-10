@@ -3,7 +3,6 @@ import torch
 from torchvision import transforms
 import models
 import vin
-from ConvNeXt.semantic_segmentation.backbone.convnext import ConvNeXt
 # import importlib
 # foobar = importlib.import_module("semantic-segmentation")
 # from foobar.semseg.models.backbones.convnext.py import ConvNeXt
@@ -42,7 +41,9 @@ class DQNPolicy:
             exploration_eps = self.cfg.final_exploration
         state = self.apply_transform(state).to(self.device)
         with torch.no_grad():
+            self.policy_net.eval()
             output = self.policy_net(state).squeeze(0)
+            self.policy_net.train()
         if random.random() < exploration_eps:
             action = random.randrange(self.action_space)
         else:
@@ -83,8 +84,37 @@ class UNETPolicy(DQNPolicy):
             in_channels=4, out_channels=1, init_features=32, pretrained=False, trust_repo=True)
         ).to(self.device)
 
-from torch.nn.parallel import DistributedDataParallel as DDP
+from ConvNeXt.semantic_segmentation.backbone.convnext import ConvNeXt
+from mmseg.models.decode_heads.uper_head import UPerHead
+
+class Stupid(torch.nn.Module):
+    def __init__(self, num_input_channels=3, num_output_channels=1):
+        super().__init__()
+        self.backbone = ConvNeXt(
+                in_chans=3,
+                depths=[3, 3, 9, 3], 
+                dims=[96, 192, 384, 768], 
+                drop_path_rate=0.4,
+                layer_scale_init_value=1.0,
+                out_indices=[0, 1, 2, 3],
+            )
+        self.decode_head=UPerHead(
+                in_channels=[96, 192, 384, 768],
+                num_classes=2,
+                in_index=[0, 1, 2, 3],
+                pool_scales=(1, 2, 3, 6),
+                channels=512,
+                dropout_ratio=0.1,
+                norm_cfg=dict(type='BN', requires_grad=True),
+                align_corners=False,
+            )
+
+    def forward(self, x):
+        x = self.backbone(x)
+        x = self.decode_head(x)
+        return x
+
 class ConvNextPolicy(DQNPolicy):
     def build_network(self):
-        return ConvNeXt() \
+        return Stupid() \
         .to(self.device)
