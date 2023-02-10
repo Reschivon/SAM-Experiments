@@ -86,7 +86,7 @@ class UNETPolicy(DQNPolicy):
 
 from ConvNeXt.semantic_segmentation.backbone.convnext import ConvNeXt
 from mmseg.models.decode_heads.uper_head import UPerHead
-
+from matplotlib import pyplot as plt
 class Stupid(torch.nn.Module):
     def __init__(self, num_input_channels=3, num_output_channels=1):
         super().__init__()
@@ -108,10 +108,20 @@ class Stupid(torch.nn.Module):
                 norm_cfg=dict(type='BN', requires_grad=True),
                 align_corners=False,
             )
+        
+        self.up = torch.nn.Upsample(scale_factor=4, mode='nearest')
 
     def forward(self, x):
         x = self.backbone(x)
         x = self.decode_head(x)
+        x = x[:, 0, :, :] / x[:, 1, :, :]
+
+        # add dim so upscaling works
+        x = x[:, None, :, :]
+        x = self.up(x)
+        x = x.squeeze(1)
+        # plt.imshow(x.cpu().detach().squeeze())
+        # plt.show()
         return x
 
 class ConvNextPolicy(DQNPolicy):
